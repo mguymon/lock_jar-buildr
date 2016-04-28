@@ -19,8 +19,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "lock_jar", "> 0.15.0", "< 1"
-  spec.add_runtime_dependency "buildr"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_runtime_dependency "buildr", "> 1.4"
+  spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 0.39"
   spec.add_development_dependency "pry"
