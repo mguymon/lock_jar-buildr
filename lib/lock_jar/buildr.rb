@@ -1,7 +1,8 @@
-require "lock_jar/buildr/version"
+require 'lock_jar/buildr/version'
+require 'lock_jar/buildr/patch'
 
 module LockJar
   module Buildr
-    # Your code goes here...
+    
   end
 end
