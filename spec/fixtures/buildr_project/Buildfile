@@ -1,0 +1,22 @@
+require 'lock_jar/buildr'
+
+# app definition, inherited into all projects
+lock_jar do
+   group 'test' do
+     jar 'junit:junit:jar:4.12'
+   end
+end
+
+define 'app' do
+  define 'project1' do
+   lock_jar do
+     jar  "org.apache.mina:mina-core:2.0.4"
+   end
+  end
+
+  define 'project2' do
+    lock_jar do
+      pom 'pom.xml'
+    end
+  end
+end

@@ -5,16 +5,16 @@ module LockJar
     module ProjectExtension
       include Extension
 
-      def lock_jar( &blk )
+      def lock_jar(&blk)
           @lockjar_dsl = ::LockJar::Domain::Dsl.create(&blk)
 
-          unless Buildr.global_lockjar_dsl.nil?
-            @lockjar_dsl.merge( Buildr.global_lockjar_dsl )
+          unless ::Buildr.global_lockjar_dsl.nil?
+            LockJar::Domain::DslMerger.new(@lockjar_dsl, ::Buildr.global_lockjar_dsl).merge
           end
       end
 
-      def lock_jars( *args )
-        lockfile = Buildr.project_to_lockfile(project)
+      def lock_jars(*args)
+        lockfile = ::Buildr.project_to_lockfile(project)
         opts = {}
         groups = ['default']
 
@@ -28,11 +28,11 @@ module LockJar
           end
         end
 
-        ::LockJar.list( lockfile, groups, opts )
+        ::LockJar.list(lockfile, groups, opts)
       end
 
       def lockjar_dsl
-        @lockjar_dsl || Buildr.global_lockjar_dsl
+        @lockjar_dsl || ::Buildr.global_lockjar_dsl
       end
 
       after_define do |project|
@@ -47,11 +47,11 @@ module LockJar
             dsl = project.lockjar_dsl
             if dsl
               # add buildr repos
-              repositories.remote do |repo|
+              project.repositories.remote do |repo|
                 puts repo
                 dsl.repository repo
               end
-              ::LockJar.lock( dsl, :lockfile => "#{project.name}.lock" )
+              ::LockJar.lock( dsl, lockfile: ::Buildr.project_to_lockfile(project) )
             else
               # XXX: output that there were no dependencies to lock
               puts "No lock_jar dependencies to lock for #{project.name}"
@@ -59,32 +59,32 @@ module LockJar
           end
 
           task("compile") do
-            if project.lockjar_dsl && !File.exists?( Buildr.project_to_lockfile(project) )
-              raise "#{project.name}.lock does not exist, run #{project.name}:lockjar:lock first"
+            if project.lockjar_dsl && !File.exists?(::Buildr.project_to_lockfile(project))
+              raise "#{::Buildr.project_to_lockfile(project)} does not exist, run #{project.name}:lockjar:lock first"
             end
-            jars = ::LockJar.list( Buildr.project_to_lockfile(project), ['default'] )
+            jars = ::LockJar.list(::Buildr.project_to_lockfile(project), ['default'])
             project.compile.with( jars )
           end
 
           task("test:compile") do
-            if project.lockjar_dsl && !File.exists?( Buildr.project_to_lockfile(project) )
+            if project.lockjar_dsl && !File.exists?(::Buildr.project_to_lockfile(project))
               raise "#{Buildr.project_to_lockfile(project)} does not exist, run #{project.name}:lockjar:lock first"
             end
-            jars = ::LockJar.list( Buildr.project_to_lockfile(project), ['test'] )
+            jars = ::LockJar.list(::Buildr.project_to_lockfile(project), ['test'])
 
-            project.test.compile.with( jars )
-            project.test.with( jars )
+            project.test.compile.with(jars)
+            project.test.with(jars)
           end
 
           task("eclipse") do
-            if project.lockjar_dsl && !File.exists?( Buildr.project_to_lockfile(project) )
+            if project.lockjar_dsl && !File.exists?(::Buildr.project_to_lockfile(project))
               raise "#{Buildr.project_to_lockfile(project)} does not exist, run #{project.name}:lockjar:lock first"
             end
-            jars = ::LockJar.list( Buildr.project_to_lockfile(project), ['default'] )
-            project.compile.with( jars )
+            jars = ::LockJar.list(::Buildr.project_to_lockfile(project), ['default'])
+            project.compile.with(jars)
 
-            jars = ::LockJar.list( Buildr.project_to_lockfile(project), ['test'] )
-            project.test.compile.with( jars )
+            jars = ::LockJar.list(::Buildr.project_to_lockfile(project), ['test'])
+            project.test.compile.with(jars)
           end
         end
       end

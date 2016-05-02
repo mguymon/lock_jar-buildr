@@ -8,7 +8,7 @@ module Buildr
   class << self
     attr_accessor :global_lockjar_dsl
 
-    def project_to_lockfile( project )
+    def project_to_lockfile(project)
       "#{project.name.gsub(/:/,'-')}.lock"
     end
   end
@@ -26,7 +26,8 @@ module Buildr
           repositories.remote.each do |repo|
             project.lockjar_dsl.repository repo
           end
-          ::LockJar.lock( project.lockjar_dsl, lockfile: ::Buildr.project_to_lockfile(project) )
+
+          ::LockJar.lock(project.lockjar_dsl, lockfile: ::Buildr.project_to_lockfile(project) )
         end
       end
     end
