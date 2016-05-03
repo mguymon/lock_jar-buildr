@@ -17,7 +17,9 @@ describe Buildr do
     let(:fake_project) { double(:project, name: 'a:fancy:project') }
 
     it 'should patch ::Buildr to add a project to lockfile helper' do
-      expect(described_class.project_to_lockfile(fake_project)).to eq 'a-fancy-project.lock'
+      expect(described_class.project_to_lockfile(fake_project)).to(
+        eq 'a-fancy-project.lock'
+      )
     end
   end
 end
